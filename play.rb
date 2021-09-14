@@ -2,10 +2,13 @@ class Hangman
 
 
     def initialize
-        # create a aplhabet array
-        @letters = ('a'..'z').to_a
         @word = words.sample
         @lives = 7
+        @word_teaser = ""
+
+        @word.first.size.times do
+            @word_teaser += "_ "
+        end
     end
 
 
@@ -22,15 +25,29 @@ class Hangman
     end
 
 
-    def print_teaser
-        word_teaser = ""
+    def print_teaser last_guess = nil
 
-        @word.first.size.times do
-            word_teaser += "_ "
+        update_teaser(last_guess) unless last_guess.nil?
+
+        puts @word_teaser
+    end
+
+
+    def update_teaser last_guess
+        new_teaser = @word_teaser.split
+       
+        new_teaser.each_with_index do |letter, index|
+            # replace blank values with guessed letter
+            # if matches letter in word
+            if letter == '_' && @word.first[index] == last_guess
+                new_teaser[index] = last_guess
+            end
         end
 
-        puts word_teaser
+        @word_teaser = new_teaser.join(' ')
+
     end
+
 
 
     def make_guess
@@ -40,8 +57,19 @@ class Hangman
 
             good_guess = @word.first.include? guess
 
-            if good_guess
-                puts "Good Guess!"
+            if guess == "exit"
+                puts "Thank you for playing!"
+            elsif good_guess
+                puts "You are correct!"
+
+                print_teaser guess
+
+                if @word.first == @word_teaser.split.join()
+                    puts "Congradulations!You have won this round!"
+                else
+                    make_guess
+                end
+            
             else
                 @lives -= 1
                 puts "Sorry your guess was incorrect. You have #{ @lives } lives left. Try again."
@@ -56,6 +84,7 @@ class Hangman
     def begin
         
         puts "New gamed started...your word is #{ @word.first.size } characters long"
+        puts "To exit the game at any point -> Type 'exit'"
         print_teaser
         puts "Clue is: #{ @word.last }"
 
