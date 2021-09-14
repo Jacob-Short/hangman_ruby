@@ -5,6 +5,7 @@ class Hangman
         # create a aplhabet array
         @letters = ('a'..'z').to_a
         @word = words.sample
+        @lives = 7
     end
 
 
@@ -33,8 +34,22 @@ class Hangman
 
 
     def make_guess
-        puts "Enter a letter"
-        guess = gets.chomp  
+        if @lives > 0
+            puts "Enter a letter"
+            guess = gets.chomp
+
+            good_guess = @word.first.include? guess
+
+            if good_guess
+                puts "Good Guess!"
+            else
+                @lives -= 1
+                puts "Sorry your guess was incorrect. You have #{ @lives } lives left. Try again."
+                make_guess
+            end
+        else
+            puts "You are out of lives! Game Over!"
+        end
     end
 
 
